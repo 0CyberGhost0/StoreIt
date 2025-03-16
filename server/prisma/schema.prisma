@@ -1,0 +1,65 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid()) 
+  name        String
+  email       String    @unique
+  password    String
+  usedStorage Int       @default(0) 
+  files       FileUser[]  
+
+  isVerified  Boolean @default(false)
+  isGoogleLogin Boolean @default(true)
+  createdAt   DateTime  @default(now())
+
+  @@map("users")
+}
+
+model File {
+  id        String    @id @default(uuid())  
+  name      String
+  extension String    
+  type      String    
+  s3Key     String    
+  ownerId    String
+  ownerName String
+  size      Int       
+  isUploaded Boolean   @default(false)
+  createdAt DateTime  @default(now())
+
+  fileUsers FileUser[]
+
+  @@map("files")
+}
+
+model FileUser {
+  userId   String
+  fileId   String
+  role     FileAccessRole 
+
+  user     User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  file     File @relation(fields: [fileId], references: [id], onDelete: Cascade)
+
+  @@id([userId, fileId]) 
+  @@map("file_users")
+}
+
+enum FileAccessRole {
+  OWNER
+  VIEWER
+}
+
+model OTP {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  otp       String
+  expiresAt DateTime
+}

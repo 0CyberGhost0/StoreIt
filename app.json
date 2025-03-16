@@ -12,10 +12,12 @@
       "supportsTablet": true
     },
     "android": {
+      // "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.StoreIt"
     },
     "web": {
       "bundler": "metro",

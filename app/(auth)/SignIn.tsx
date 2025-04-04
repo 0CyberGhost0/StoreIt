@@ -1,26 +1,24 @@
-
-// import { Link, router } from "expo-router";
-import { useCallback, useState } from "react";
-import { Alert, Image, ScrollView, Text, View } from "react-native";
+import { useState } from "react";
+import { Alert, Image, ScrollView, StatusBar, Text, View } from "react-native";
 
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
-// import OAuth from "@/components/OAuth";
-import { icons } from "@/constants";
+import { icons, images, url } from "@/constants";
 import { Eye, EyeSlash, PasswordCheck } from "iconsax-react-native";
 import { Link, useRouter } from "expo-router";
 import useAuthStore from "@/store";
+import axios from "axios";
 
 const SignIn = () => {
-    // const { signIn, setActive, isLoaded } = useSignIn();
-
     const login = useAuthStore((state) => state.login);
 
     const [form, setForm] = useState({
         email: "",
         password: "",
     });
+
     const router = useRouter();
+
     const onSignInPress = async () => {
         try {
             if (!form.email || !form.password) {
@@ -28,7 +26,7 @@ const SignIn = () => {
                 return;
             }
 
-            const response = await axios.post("http://192.168.237.199:3000/auth/login", {
+            const response = await axios.post(`${url}/auth/login`, {
                 email: form.email,
                 password: form.password
             }, {
@@ -40,26 +38,33 @@ const SignIn = () => {
             if (response.status === 200) {
                 login(response.data.user, response.data.token);
                 router.push("/(root)/(tabs)/Home");
-
             }
 
         } catch (error) {
             console.log(error.message);
             alert(error.message);
-
         }
     }
+
     return (
         <ScrollView className="flex-1 bg-white">
-            <View className="flex-1 bg-white">
-                <View className="relative w-full h-[250px]">
-                    {/* <Image source={images.signUpCar} className="z-0 w-full h-[250px]" /> */}
-                    <Text className="text-2xl text-black font-JakartaSemiBold absolute bottom-5 left-5">
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
+
+            <View className="flex-1 bg-white items-center justify-center">
+                {/* Centered logo */}
+                <Image
+                    source={images.fullBrandLogo}
+                    className="w-48 h-24 mt-10"
+                    resizeMode="contain"
+                />
+
+                <View className="relative w-full h-[200px] items-center justify-center">
+                    <Text className="text-2xl text-black font-JakartaSemiBold">
                         Welcome 👋
                     </Text>
                 </View>
 
-                <View className="p-5">
+                <View className="p-5 w-full">
                     <InputField
                         label="Email"
                         placeholder="Enter your email"
@@ -76,7 +81,6 @@ const SignIn = () => {
                         leftIcon={icons.image}
                         LeftIcon={() => <PasswordCheck color="black" />}
                         RightIcon={() => <EyeSlash color="black" />}
-
                         RightIcon1={() => <Eye color="black" />}
                         secureTextEntry={true}
                         textContentType="password"
@@ -90,8 +94,6 @@ const SignIn = () => {
                         className="p-4 mt-10"
                         bgColor="bg-[#ea676d]"
                     />
-
-                    {/* <OAuth /> */}
 
                     <Link
                         href="/(auth)/SignUp"

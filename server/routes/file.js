@@ -227,11 +227,13 @@ fileRoutes.get("/getRecentFile", authMiddleWare, async (req, res) => {
         console.log("hit recent file");
 
         if (!req.user) return res.status(401).json({ error: "Unauthorized" });
+        const limit=req.query.limit;
+        console.log(limit);
 
         const s3Command = new ListObjectsV2Command({
             Bucket: process.env.AWS_BUCKET_NAME,
             Prefix: `uploads/${req.user}/`,
-            MaxKeys: 10,
+            MaxKeys: limit,
 
         });
 
@@ -277,7 +279,7 @@ fileRoutes.get("/getRecentFile", authMiddleWare, async (req, res) => {
             };
         });
 
-        return res.json(files);
+        return res.json(files.reverse());
     } catch (error) {
         console.error("Error fetching files:", error);
         return res.status(500).json({ error: "Internal Server Error" });
@@ -331,26 +333,7 @@ fileRoutes.patch("/rename",authMiddleWare,fileAuthMiddleware,async(req,res)=>{
     }
 });
 
-fileRoutes.get("/search",authMiddleWare,async(req,res)=>{
-    try {
-        const searchText=req.query.text;
-        const userId=req.user;
-        const files=await prisma.file.findMany({
-            where:{
-                ownerId:userId,
-                name:{
-                    contains:searchText,
-                    mode:"insensitive",
-                }
-            }
-        });
-        return res.json(files);
-        
-    } catch (error) {
-        console.log(error);
-        return res.json({error});
-    }
-});
+
 
 fileRoutes.get("/getStorageUsed",authMiddleWare,async(req,res)=>{
     try {
@@ -370,6 +353,59 @@ fileRoutes.get("/getStorageUsed",authMiddleWare,async(req,res)=>{
         
     }
 
+});
+fileRoutes.get("/search", authMiddleWare, async (req, res) => {
+    try {
+        const { searchText } = req.query;
+        console.log(searchText);
+        const userId = req.user;
+
+        if (!searchText) return res.status(400).json({ error: "Search query is required" });
+
+        // 🔹 Search files in PostgreSQL
+        const dbFiles = await prisma.file.findMany({
+            where: {
+                ownerId: userId,
+                OR: [
+                    { name: { contains: searchText, mode: "insensitive" } },       // Search by name
+                    { extension: { contains: searchText, mode: "insensitive" } },  // Search by extension
+                    { ownerName: { contains: searchText, mode: "insensitive" } }   // Search by owner name
+                ]
+            },
+            select: {
+                id: true,
+                name: true,
+                extension: true,
+                type: true,
+                s3Key: true,
+                size: true,
+                isUploaded: true,
+                createdAt: true,
+                ownerName: true,
+            }
+        });
+
+        if (dbFiles.length === 0) {
+            return res.status(404).json({ error: "No matching files found" });
+        }
+
+        // 🔹 Generate signed S3 URLs
+        const filesWithUrls = await Promise.all(
+            dbFiles.map(async (file) => {
+                const url = await getObjectURL(file.s3Key);
+                return {
+                    ...file,
+                    url
+                };
+            })
+        );
+        console.log(filesWithUrls);
+
+        return res.json(filesWithUrls);
+    } catch (error) {
+        console.error("Error in search route:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 

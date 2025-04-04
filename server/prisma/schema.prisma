@@ -15,6 +15,7 @@ model User {
   password    String
   usedStorage Int       @default(0) 
   files       FileUser[]  
+  is2FAEnabled Boolean   @default(false)
 
   isVerified  Boolean @default(false)
   isGoogleLogin Boolean @default(true)

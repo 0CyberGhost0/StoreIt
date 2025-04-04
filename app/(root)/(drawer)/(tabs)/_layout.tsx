@@ -6,12 +6,23 @@ import { Bookmark } from "iconsax-react-native";
 import { Profile as User } from "iconsax-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { icons } from "@/constants";
+import UploadButton from "@/components/UploadButton";
 
 
 const Layout = () => {
+    const handleUpload = async () => {
+        try {
+            // await UploadFunction();
+            console.log("ok");
+            Alert.alert("Success", "File uploaded successfully!");
+        } catch (error) {
+            Alert.alert("Error", "File upload failed!");
+            console.error("Upload error:", error);
+        }
+    };
     return (
         <SafeAreaView className="flex-1 bg-[#F7F8FA]">
-            <StatusBar barStyle="dark-content" backgroundColor="#F7F8FA" />
+            {/* <StatusBar barStyle="dark-content" backgroundColor="#F7F8FA" /> */}
             <Tabs
                 screenOptions={{
                     tabBarActiveTintColor: "black",
@@ -90,16 +101,19 @@ const Layout = () => {
                     options={{
                         title: "Upload",
                         headerShown: false,
-                        tabBarButton: (props) => (
-                            <TouchableWithoutFeedback {...props}>
-                                <View className="absolute -top-6 self-center bg-[#FA7275] w-20 h-20 justify-center items-center rounded-full shadow-xl shadow-black">
-                                    {props.children}
-                                </View>
-                            </TouchableWithoutFeedback>
-                        ),
-                        tabBarIcon: ({ focused }) => (
-                            <Image source={icons.upload} className="h-12 w-12" resizeMode="contain" tintColor="white" />
-                        ),
+                        // tabBarButton: (props) => (
+                        //     <TouchableWithoutFeedback onPress={handleUpload}>
+                        //         <View className="absolute -top-6 self-center bg-[#FA7275] w-20 h-20 justify-center items-center rounded-full shadow-xl shadow-black">
+                        //             {/* {props.children} */}
+                        //             <Image source={icons.upload} className="h-12 w-12" resizeMode="contain" tintColor="white" />
+                        //         </View>
+                        //     </TouchableWithoutFeedback>
+                        // ),
+                        // tabBarIcon: ({ focused }) => (
+                        //     <Image source={icons.upload} className="h-12 w-12" resizeMode="contain" tintColor="white" />
+                        // ),
+                        tabBarButton: () => <UploadButton handleUpload={handleUpload} />,
+                        tabBarIcon: () => null,
                     }}
                 />
                 <Tabs.Screen
@@ -150,3 +164,4 @@ const Layout = () => {
 };
 
 export default Layout;
+

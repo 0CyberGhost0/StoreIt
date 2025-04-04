@@ -19,14 +19,23 @@ import csv from "@/assets/icons/file-csv.png";
 import document from "@/assets/icons/file-document.png";
 import audio from "@/assets/icons/file-audio.png";
 import excel from "@/assets/icons/file-excel.png";
+import bigFile from "@/assets/images/files.png";
 import axios from "axios";
 import dots from "@/assets/icons/dots.png";
 import edit from "@/assets/icons/edit.png";
 import deleteIcon from "@/assets/icons/delete.png";
+import bookmark from "@/assets/icons/bookmark.png";
 import info from "@/assets/icons/info.png";
 import share from "@/assets/icons/share.png";
 import download from "@/assets/icons/download.png";
-
+import leftArrow from "@/assets/icons/arrow-left.png"
+import notfound from "@/assets/images/notfound.png";
+import bookmark1 from "@/assets/icons/bookmark1.png";
+import bookmark2 from "@/assets/icons/bookmark2.png";
+import fullBrandLogo from "@/assets/icons/logo-full-brand.png";
+import month from "@/assets/icons/month.png";
+import year from "@/assets/icons/year.png";
+import week from "@/assets/icons/week.png";
 import * as FileSystem from "expo-file-system";
 import * as IntentLauncher from "expo-intent-launcher";
 import { Linking, Platform } from "react-native";
@@ -34,8 +43,15 @@ export const icons={
     search,
     upload,
     doc,
+    month,
+    year,
+    week,
+    bookmark1,
+    bookmark2,
     docx,
+    bookmark,
     svg,
+    leftArrow,
     csv,
     excel,
     document,
@@ -56,6 +72,9 @@ export const icons={
 }
 export const images={
     avatar,    
+    bigFile,
+    fullBrandLogo,
+    notfound,
 }
 export const SVG ={
     Document,
@@ -86,12 +105,23 @@ export const getFileIcon = (extension) => {
         default: return icons.other;
     }
 };
+export async function confirmUpload(fileId,token) {
+    await axios.patch(`${url}/file/upload/confirm`,
+      { fileId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token,
+        },
+      }
+    );
+  }
 export const getList = async ({category,token}) => {
     // const {token}=useAuthStore();
     try {
 
         
-        const response = await axios.get("http://192.168.237.199:3000/file/getList", {
+        const response = await axios.get(`${url}/file/getList`, {
         headers: {
             "x-auth-token": token,
         },
@@ -102,19 +132,22 @@ export const getList = async ({category,token}) => {
         return response;
 
     } catch (err) {
-        console.log("Error getting list:", err);
+        // console.log("Error getting list:", err);
         return [];
     }
 }
 
-export const getRecentFiles = async ({token}) => {
+export const getRecentFiles = async ({token,limit}) => {
     // const {token}=useAuthStore();
     try {
 
         
-        const response = await axios.get("http://192.168.237.199:3000/file/getRecentFile", {
+        const response = await axios.get(`${url}/file/getRecentFile`, {
         headers: {
             "x-auth-token": token,
+        },
+        params: {
+            limit: limit,
         },
         });
 
@@ -220,7 +253,8 @@ export const actionsDropdownItems = [
                     flags: 1,
                     type: "*/*",
                 });
-            } else {
+            }
+            else {
                 await Linking.openURL(uri);
             }
         } catch (error) {
@@ -231,7 +265,7 @@ export const actionsDropdownItems = [
 export const renameFile=async (fileId,newName,token)=>{
     try {
 
-        const response = await axios.patch("http://192.168.237.199:3000/file/rename", {
+        const response = await axios.patch(`${url}/file/rename`, {
             fileId,
             newName,
         }, {
@@ -294,7 +328,7 @@ export const moveToDownloads = async (fileUri, fileName,fileType) => {
 export const deleteFile=async(fileId,token)=>{
     try {
 
-        const response = await axios.delete("http://192.168.237.199:3000/file/delete", {
+        const response = await axios.delete(`${url}/file/delete`, {
             headers: {
                 "x-auth-token": token,
             },
@@ -312,7 +346,7 @@ export const deleteFile=async(fileId,token)=>{
 
 export const searchFiles=async(searchText,token)=>{
     try {
-        const response = await axios.get("http://192.168.237.199:3000/file/search", {
+        const response = await axios.get(`${url}/file/search`, {
             headers: {
                 "x-auth-token": token,
             },
@@ -329,12 +363,12 @@ export const searchFiles=async(searchText,token)=>{
 }
 export const getUsedStorage = async (token) => {
     try {
-        const response = await axios.get("http://192.168.237.199:3000/file/getStorageUsed", {
+        const response = await axios.get(`${url}/file/getStorageUsed`, {
             headers: {
                 "x-auth-token": token,
             },
         });
-        console.log("response",response);
+        // console.log("response",response);
         return response;
         
     } catch (error) {
@@ -344,3 +378,38 @@ export const getUsedStorage = async (token) => {
 }
 
 export const bytesToMB = (bytes) => (bytes / (1024 * 1024)).toFixed(2);
+
+export const getSearchFiles = async ({searchText, token}) => {
+    try {
+        const response = await axios.get(`${url}/file/search`, {
+            headers: {
+                "x-auth-token": token,
+            },
+            params: {
+                searchText,
+            },
+        });
+        return response;
+    } catch (error) {
+        console.log("Error searching files:", error);
+        return [];
+    }
+}
+export const toggle2FactorAuthentication = async (token,is2FAEnabled) => {
+    try {
+        const response = await axios.patch(`${url}/auth/toggle2FA`,{
+            is2FAEnabled,
+        } ,{
+            headers: {
+                "x-auth-token": token,
+            },
+            
+        });
+        return response;
+    } catch (error) {
+        console.log("Error toggling 2FA:", error);
+        return error.response.data;
+    }
+}
+
+export const url="http://192.168.201.199:3000";

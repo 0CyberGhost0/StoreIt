@@ -32,6 +32,7 @@ authRoutes.post("/signup", async (req, res) => {
         email,
         password: hashedPassword,
         isVerified: true,
+        is2FAEnabled,
       },
     });
     const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET);
@@ -73,6 +74,22 @@ authRoutes.get("/getData", authMiddleWare, async (req, res) => {
     if (!user) return res.status(400).json({ error: "No User Found" });
 
     res.status(200).json({ ...user, token: req.token });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+authRoutes.patch("/toggle2FA", authMiddleWare, async (req, res) => {
+  try {
+    const userId = req.user;
+    const { is2FAEnabled } = req.body;
+    console.log(is2FAEnabled);
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: { is2FAEnabled },
+    });
+
+    res.status(200).json({ message: "2FA updated successfully", user });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

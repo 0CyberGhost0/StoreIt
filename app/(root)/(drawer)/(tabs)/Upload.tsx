@@ -29,7 +29,7 @@ const Upload = () => {
     setUploading(true);
 
     try {
-      const response = await axios.post("http://192.168.237.199:3000/file/upload", {
+      const response = await axios.post(`${url}/file/upload`, {
         fileName: file.name,
         contentType: file.mimeType,
         fileSize: file.size,
@@ -42,7 +42,7 @@ const Upload = () => {
       });
 
 
-      const { url, key, fileId } = response.data;
+      const { url, fileId } = response.data;
 
 
 
@@ -57,7 +57,7 @@ const Upload = () => {
 
 
       if (uploadResponse.ok) {
-        const confirmationResponse = await axios.patch("http://192.168.79.199:3000/file/upload/confirm", {
+        const confirmationResponse = await axios.patch(`${url}/file/upload/confirm`, {
           fileId: fileId,
 
         }, {
@@ -66,6 +66,7 @@ const Upload = () => {
             "x-auth-token": token,
           },
         });
+
 
         alert("File uploaded successfully!");
       } else {

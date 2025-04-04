@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { ScrollView, Text, View, Image, Alert } from "react-native";
+import { ScrollView, Text, View, Image, StatusBar, Alert } from "react-native";
 import CustomButton from "@/components/CustomButton";
 import InputField from "@/components/InputField";
-import { icons } from "@/constants";
+import { icons, images, url } from "@/constants";
 import { Eye, EyeSlash, User, PasswordCheck } from "iconsax-react-native";
 import { Link, useRouter } from "expo-router";
 import axios from "axios";
@@ -27,8 +27,8 @@ const SignUp = () => {
                 return;
             }
 
-            const response = await axios.post("http://192.168.237.199:3000/auth/signup", {
-                name: form.firstName + " " + form.lastName,
+            const response = await axios.post(`${url}/auth/signup`, {
+                name: `${form.firstName} ${form.lastName}`,
                 email: form.email,
                 password: form.password
             }, {
@@ -39,23 +39,34 @@ const SignUp = () => {
 
             if (response.status === 200) {
                 login(response.data.user, response.data.token);
-                router.push("/(root)/(tabs)/Home"); // Correct way to navigate
+                router.push("/(root)/(tabs)/Home");
             }
 
         } catch (error) {
             alert(error.message);
         }
     };
+
     return (
         <ScrollView className="flex-1 bg-white">
-            <View className="flex-1 bg-white">
-                <View className="relative w-full h-[250px]">
-                    <Text className="text-2xl text-black font-JakartaSemiBold absolute bottom-5 left-5">
+            <StatusBar barStyle="dark-content" backgroundColor="white" />
+
+            <View className="flex-1 bg-white items-center justify-center">
+                {/* Logo Section */}
+                <Image
+                    source={images.fullBrandLogo}
+                    className="w-48 h-24 mt-10"
+                    resizeMode="contain"
+                />
+
+                <View className="relative w-full h-[200px] items-center justify-center">
+                    <Text className="text-2xl text-black font-JakartaSemiBold">
                         Create an Account
                     </Text>
                 </View>
 
-                <View className="p-5">
+                <View className="p-5 w-full">
+                    {/* First & Last Name */}
                     <View className="flex-row justify-between">
                         <View className="w-[48%]">
                             <InputField
@@ -67,6 +78,7 @@ const SignUp = () => {
                                 onChangeText={(value) => setForm({ ...form, firstName: value })}
                             />
                         </View>
+
                         <View className="w-[48%]">
                             <InputField
                                 label="Last Name"
@@ -79,26 +91,29 @@ const SignUp = () => {
                         </View>
                     </View>
 
+                    {/* Email */}
                     <InputField
                         label="Email"
                         placeholder="Enter your email"
                         leftIcon={icons.email}
-                        LeftIcon={() => <Image source={icons.email} className="h-8 w-8" resizeMode="contain" />}
+                        LeftIcon={() => (
+                            <Image source={icons.email} className="h-8 w-8" resizeMode="contain" />
+                        )}
                         textContentType="emailAddress"
                         value={form.email}
                         onChangeText={(value) => setForm({ ...form, email: value })}
                     />
 
+                    {/* Password */}
                     <InputField
                         label="Password"
                         placeholder="Enter your password"
                         leftIcon={icons.password}
                         LeftIcon={() => <PasswordCheck color="black" />}
                         RightIcon={() => (
-                            <TextInput.Icon
-                                icon={isPasswordVisible ? Eye : EyeSlash}
-                                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                            />
+                            <TouchableOpacity onPress={() => setIsPasswordVisible(!isPasswordVisible)}>
+                                {isPasswordVisible ? <Eye color="black" /> : <EyeSlash color="black" />}
+                            </TouchableOpacity>
                         )}
                         secureTextEntry={!isPasswordVisible}
                         textContentType="password"
@@ -106,6 +121,7 @@ const SignUp = () => {
                         onChangeText={(value) => setForm({ ...form, password: value })}
                     />
 
+                    {/* Sign Up Button */}
                     <CustomButton
                         title="Sign Up"
                         onPress={onSignUpPress}
@@ -113,11 +129,12 @@ const SignUp = () => {
                         bgColor="bg-[#ea676d]"
                     />
 
+                    {/* Navigation Link */}
                     <Link
                         href="/(auth)/SignIn"
                         className="text-lg text-center text-general-200 mt-10"
                     >
-                        Already have an account? {" "}
+                        Already have an account?{" "}
                         <Text className="text-primary-500 text-blue-800">Sign In</Text>
                     </Link>
                 </View>

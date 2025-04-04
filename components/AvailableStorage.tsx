@@ -9,16 +9,15 @@ const AvailableStorage = () => {
 
 
     const [usedStorage, setUsedStorage] = useState(0);
-    const totalStorage = 10;
+    const totalStorage = 200;
     const { token } = useAuthStore();
 
 
 
     useEffect(() => {
-        const fetchStorage = async () => {// Define your token here
+        const fetchStorage = async () => {
             const response = await getUsedStorage(token);
-            // setUsedStorage(response);
-            console.log("Used Storage:", response?.data.usedStorage);
+
             if (response?.status === 200) {
                 setUsedStorage(bytesToMB(response?.data.usedStorage));
             }
@@ -49,7 +48,7 @@ const AvailableStorage = () => {
                     Available Storage
                 </Text>
                 <Text className="text-sm font-JakartaSemiBold text-white">
-                    {usedStorage} MB  / 10 MB
+                    {usedStorage} MB  / 200 MB
                 </Text>
             </View>
         </LinearGradient>

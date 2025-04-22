@@ -26,7 +26,7 @@ const Home = () => {
 
     const searchFieldRef = useRef(null);
 
-    const { user, token, logout } = useAuthStore();
+    const { user, token } = useAuthStore();
     const router = useRouter();
 
     // 🔥 Fetch recent files
@@ -121,15 +121,15 @@ const Home = () => {
                                     </TouchableOpacity>
                                     <View className='flex-col'>
                                         <Text className="font-JakartaMedium text-[14px]">Welcome Back,</Text>
-                                        <Text className="font-JakartaBold text-[18px]">{user.name || "Guest"}</Text>
+                                        <Text className="font-JakartaBold text-[18px]">{user?.name || "Guest"}</Text>
                                     </View>
                                 </View>
-                                <TouchableOpacity onPress={() => {
+                                {/* <TouchableOpacity onPress={() => {
                                     router.push("/(auth)/SignIn");
                                     logout();
                                 }}>
                                     <Notification size={32} color="#000000" />
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                             </View>
 
                             {/* ✅ Search Field */}

@@ -8,7 +8,7 @@ import { images, toggle2FactorAuthentication } from '@/constants';
 import { SubscriptionModal } from '../upgrade';
 
 const Profile = () => {
-  const { user, token } = useAuthStore();
+  const { user, token, logout } = useAuthStore();
   const router = useRouter();
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -22,6 +22,13 @@ const Profile = () => {
     await toggle2FactorAuthentication(token, !is2FAEnabled);
     console.log(`2FA is now ${!is2FAEnabled ? 'Enabled' : 'Disabled'}`);
   };
+  const handleLogout = async () => {
+    router.push('/(auth)/SignUp');
+    logout();
+    // Perform logout logic here
+    // For example, clear user data, navigate to login screen, etc.
+    console.log('User logged out');
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
@@ -41,16 +48,16 @@ const Profile = () => {
             className="w-32 h-32 rounded-full border-4 border-white mt-8"
             resizeMode="cover"
           />
-          <Text className="text-3xl font-bold text-white mt-4">{user.name}</Text>
-          <Text className="text-white text-sm">{user.email}</Text>
+          <Text className="text-3xl font-bold text-white mt-4">{user?.name}</Text>
+          <Text className="text-white text-sm">{user?.email}</Text>
 
           {/* Edit Button */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className="bg-white px-6 py-2 rounded-full mt-4 shadow-md"
             onPress={() => router.push('/edit-profile')}
           >
             <Text className="text-blue-500 font-semibold">Edit Profile</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Profile Options */}
@@ -58,9 +65,9 @@ const Profile = () => {
 
           {/* Option Card Component */}
           {[
-            { label: 'Settings', icon: <Setting3 size={28} color="#333" />, onClick: () => router.push('/settings') },
-            { label: 'My Files', icon: <FolderCloud size={28} color="#333" />, onClick: () => router.push('/files') },
-            { label: 'Help & Support', icon: <UserTag size={28} color="#333" />, onClick: () => router.push('/help') },
+            { label: 'Settings', icon: <Setting3 size={28} color="#333" />, onClick: () => { } },
+            { label: 'My Files', icon: <FolderCloud size={28} color="#333" />, onClick: () => { } },
+            { label: 'Help & Support', icon: <UserTag size={28} color="#333" />, onClick: () => { } },
             { label: 'Upgrade Plan', icon: <Star size={28} color='#333' />, onClick: () => setIsModalVisible(true) },
           ].map((item, index) => (
             <TouchableOpacity
@@ -99,7 +106,7 @@ const Profile = () => {
         <View className="items-center">
           <TouchableOpacity
             className="bg-red-500 px-6 py-3 rounded-full flex-row items-center justify-center shadow-lg"
-            onPress={() => router.push('/logout')}
+            onPress={handleLogout}
           >
             <Text className="text-white font-bold text-lg mr-2">Logout</Text>
             <LogoutCurve size={28} color="white" />

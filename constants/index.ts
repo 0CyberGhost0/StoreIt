@@ -224,11 +224,11 @@ export const actionsDropdownItems = [
     icon: icons.info,
     value: "details",
   },
-  {
-    label: "Share",
-    icon: icons.share,
-    value: "share",
-  },
+//   {
+//     label: "Share",
+//     icon: icons.share,
+//     value: "share",
+//   },
   {
     label: "Download",
     icon: icons.download,
@@ -411,5 +411,6 @@ export const toggle2FactorAuthentication = async (token,is2FAEnabled) => {
         return error.response.data;
     }
 }
+
 
 export const url="http://192.168.201.199:3000";

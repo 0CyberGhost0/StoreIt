@@ -13,16 +13,7 @@ const UploadFunction = async (token,name) => {
 
     const file = result.assets[0];
 
-    // const notificationId=await Notification.scheduleNotificationAsync({
-    //   content:{
-    //     title:'Uploading File',
-    //     body:'0% Completed',
-    //   },
-    //   trigger:null,
-    // });
-    // console.log("NOTIFF");
-    // console.log(notificationId);
-    // Step 1: Request upload URL
+
     const response = await axios.post(`${backendUrl}/file/upload`, {
       fileName: file.name,
       contentType: file.mimeType,

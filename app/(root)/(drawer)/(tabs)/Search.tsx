@@ -86,7 +86,7 @@ const SearchScreen = () => {
               <FileCardSkeleton />
             </View>
           )}
-          className='mt-4'
+          className='mt-4 -mx-4'
         />
       ) : files?.length === 0 && searchText ? (
         <Text className="text-center text-gray-500 mt-10">No matching files found.</Text>
@@ -102,7 +102,7 @@ const SearchScreen = () => {
               <FileCard file={item} />
             </View>
           )}
-          className='mt-4 mb-28'
+          className='mt-4 mb-28 -mx-4'
         />
       )}
     </SafeAreaView>
